@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id "com.github.weave-mc.weave-gradle" version "649dba7468"
+    id "com.github.johnrengelman.shadow" version "8.0.0"
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'org.cubewhy'
+version = '1.0-SNAPSHOT'
+
+minecraft.version("1.8.9")
+
+configurations {
+    include
+    implementation.extendsFrom(include)
+}
+
+repositories {
+    maven { url = "https://jitpack.io" }
+    maven { url = "https://repo.spongepowered.org/maven/" }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+//    include fileTree(dir: "libs", include: ["*.jar"])
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.22.1'
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.22.1'
+
+    compileOnly"com.github.weave-mc:weave-loader:v0.2.4"
+    compileOnly "org.spongepowered:mixin:0.8.5"
+    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+kotlin {
+    jvmToolchain(17)
+}
+shadowJar {
+    archiveClassifier.set("fatjar")
+    configurations = [project.configurations.include]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+
+    exclude "native-binaries/**"
+
+    exclude "LICENSE.txt"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("lunarcn.meta.json") {
+        expand "version": project.version
+    }
+
+    rename "(.+_at.cfg)", "META-INF/\$1"
+}
+
+jar.dependsOn(shadowJar)

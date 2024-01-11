@@ -1,0 +1,9 @@
+{
+  "mixinConfigs": [
+  ],
+  "entrypoints": [
+    "org.cubewhy.lyrics.ModEntry"
+  ],
+  "hooks": [
+  ]
+}
